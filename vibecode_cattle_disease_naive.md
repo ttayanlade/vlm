@@ -14,7 +14,7 @@ You will try three ways of guessing, on the same photos, then compare them.
 2. A **plain model**. It starts knowing nothing about photos and learns only from these cattle pictures.
 3. **ResNet**. It already knows how to look at ordinary photos. You teach it these three groups.
 
-The photos come from a public collection, the [Cattle diseases dataset](https://www.kaggle.com/datasets/devang03mgr/cattle-diseases-datasets). Register a Kaggle account so you can download the zip.
+The photos come from a public collection, the [Cattle diseases dataset](https://www.kaggle.com/datasets/devang03mgr/cattle-diseases-datasets). The zip file will be provided.
 
 You will not write the program yourself. This page has the instructions. Each gray box is written the way a beginner would ask, with no library names and no settings to memorize. Copy that prompt, then either click the sparkle in Colab or paste it into the LLM of your choice. The helper writes the Python. You paste that Python into Colab and run it.
 
@@ -26,7 +26,7 @@ You will not write the program yourself. This page has the instructions. Each gr
 
 1. Open [Google Colab](https://colab.research.google.com) and create a **new notebook**.
 2. Turn on a GPU before you run anything: **Runtime → Change runtime type → T4 GPU → Save**.
-3. On Kaggle, download the cattle diseases zip. In Colab, open the folder icon on the left and upload that zip. The file should be named `archive.zip` and sit at `/content/archive.zip`.
+3. The zip file will be provided. In Colab, open the folder icon on the left and upload that zip. The file should be named `archive.zip` and sit at `/content/archive.zip`.
 4. Work down this page one step at a time. For each step:
    - Read the section called **For you**.
    - Copy the gray prompt. On GitHub, use the copy icon at the top right of the box.
@@ -55,13 +55,13 @@ If the first line in a code cell is an ordinary sentence, delete the sentences a
 
 The zip is about 270 megabytes. Each teaching step often takes 10 to 25 minutes. Leave the tab open while a cell runs.
 
-## Step 1. Download the pictures
+## Step 1. Unpack the pictures
 
 ### For you
 
 The zip contains a folder named `Cows datasets`. Inside it are three folders of photos: `foot-and-mouth`, `healthy`, and `lumpy`. The folder name is the group.
 
-The prompt already looks for `/content/archive.zip`. Change that line only if your file is somewhere else, or if you have a direct download link.
+The prompt already looks for `/content/archive.zip`. Change that line only if the provided zip is somewhere else.
 
 ### Copy this prompt
 
@@ -365,7 +365,7 @@ Keep every test photo exactly as it is. From the training photos, keep about one
 
 Train a new plain model from scratch, and a new pretrained ResNet, using only those smaller training and validation piles. Give each about 5 passes. Don't look at the test photos while they learn.
 
-Then score both on the full test pile, the same test photos as before. Make a bar chart with two bars, Plain model and ResNet, showing percent correct. Tell me both percentages and which one did better when it had less to learn from.
+Then score both on the full test pile, the same test photos as before. Make a bar chart with two bars, Plain model and ResNet, showing percent correct. Tell me both percents and which one did better when it had less to learn from.
 ```
 
 ### You will know it worked when
