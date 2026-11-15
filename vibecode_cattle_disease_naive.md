@@ -8,16 +8,19 @@ You will teach a computer to look at a photo of cattle and place it in one of th
 2. **Lumpy skin**
 3. **Foot and mouth**
 
-You will train two models on the same photos, then compare them.
+You will try three ways of guessing, on the same photos, then compare them.
 
-1. A **plain model**. It starts knowing nothing about photos and learns only from these cattle pictures.
-2. **ResNet**. It already knows how to look at ordinary photos. You teach it these three groups.
+1. **Random guessing**. It ignores the photo and picks a group at random.
+2. A **plain model**. It starts knowing nothing about photos and learns only from these cattle pictures.
+3. **ResNet**. It already knows how to look at ordinary photos. You teach it these three groups.
 
 The photos come from a public collection, the [Cattle diseases dataset](https://www.kaggle.com/datasets/devang03mgr/cattle-diseases-datasets). Register a Kaggle account so you can download the zip.
 
 You will not write the program yourself. This page has the instructions. Each gray box is written the way a beginner would ask, with no library names and no settings to memorize. Copy that prompt, then either click the sparkle in Colab or paste it into the LLM of your choice. The helper writes the Python. You paste that Python into Colab and run it.
 
 > **This is a classroom exercise.** The program can be wrong. It must not be used to decide whether a real animal is sick. A veterinarian makes that decision.
+
+> **If a cell fails, wait a couple of seconds.** The helper sometimes fixes the code by itself. Give it that moment before you copy the error or ask for a new cell.
 
 ## Start with an empty Colab
 
@@ -46,8 +49,9 @@ If the first line in a code cell is an ordinary sentence, delete the sentences a
 | Validation | Photos used during teaching to see if it is improving. About 15 percent |
 | Test | Photos kept aside until the end. The final score uses only these. About 15 percent |
 | Epoch | One pass through the training photos |
-| Plain model | The first model. It learns only from these cattle pictures |
-| ResNet | The second model. It already knows how to look at ordinary photos |
+| Random guessing | Picks a group at random and does not look at the photo |
+| Plain model | Learns only from these cattle pictures |
+| ResNet | Already knows how to look at ordinary photos |
 
 The zip is about 270 megabytes. Each teaching step often takes 10 to 25 minutes. Leave the tab open while a cell runs.
 
@@ -119,7 +123,7 @@ Every photo has to be the same size. The helper then splits them into three pile
 
 - **Train**, about 70 percent. The model learns from these.
 - **Validation**, about 15 percent. During teaching, the model is scored on these so it can stop when it stops improving.
-- **Test**, about 15 percent. Training does not use these. Both models are scored on this same pile, so the comparison is fair.
+- **Test**, about 15 percent. Training does not use these. Random guessing, the plain model, and ResNet are all scored on this same pile.
 
 Each disease should show up in all three piles. Training photos can be flipped or tilted a little. The animal is still the same animal. Validation photos and test photos stay as they are.
 
@@ -146,7 +150,35 @@ Show me 5 slightly changed versions of one training photo, so I can see that it 
 
 You see the three group names, a count of training batches, validation batches, and test batches, and one training photo repeated five times with small differences.
 
-## Step 4. Train the plain model
+## Step 4. Guess at random
+
+### For you
+
+Before any learning, see what happens if the computer ignores the photo and picks a group at random. There are three groups, so a lucky guess is right about one time in three.
+
+This step uses the test photos. It shows the percent correct, a mix-up grid, and some photos with the random guess next to the real group. Keep that percent. The later models are the ones that try to do better.
+
+### Copy this prompt
+
+```text
+We have not taught a model yet. I want to see what pure guessing looks like.
+
+On the test photos only, pick a group at random for each photo. The groups are Foot and mouth, Healthy, and Lumpy skin, and each group should be equally likely. Don't look at the photo to decide. Don't train anything, and don't use the training photos for this.
+
+Tell me what percent of those random guesses were right. Remember that percent. We will compare it later with models that actually learn.
+
+Show a mix-up grid titled "Random guessing: where it got confused on the test pictures." The rows are the real group, the columns are the guess, and the count goes in each square. Tell me which mix-up happened most, in one sentence.
+
+Also show about 12 test photos. On each one, write the random guess and the real group. Use green text when the guess matches and red text when it does not.
+```
+
+### You will know it worked when
+
+- A sentence gives the random-guessing percent.
+- You see a mix-up grid for random guessing.
+- You see about 12 test photos. Green titles are right. Red titles are mistakes.
+
+## Step 5. Train the plain model
 
 ### For you
 
@@ -169,7 +201,7 @@ Let it learn for about 5 passes through the training photos. While it learns, ch
 
 Some diseases have fewer photos than others. Please don't let the model ignore the smaller groups.
 
-Save the trained model, and tell me in a normal sentence what percent it got right on the validation photos. Also say that this is for learning and it is not a veterinarian.
+Save the trained model, and tell me in a normal sentence what percent it got right on the validation photos.
 
 A progress bar is good. Tell me when training starts, because it can take a while.
 ```
@@ -180,13 +212,13 @@ The cell prints a validation percent and says the model was saved.
 
 A score above 33 percent is better than guessing. The next step is how it does on the test photos.
 
-## Step 5. See how the plain model did
+## Step 6. See how the plain model did
 
 ### For you
 
 This step scores the plain model on the test photos, which it was not allowed to use while learning.
 
-You will see how the scores changed over time, which groups got mixed up, and some test photos with the guess next to the real group. Green means right. Red means wrong. Keep the test percent. Step 8 compares it with ResNet.
+You will see how the scores changed over time, which groups got mixed up, and some test photos with the guess next to the real group. Green means right. Red means wrong. Keep the test percent. The comparison step puts it next to random guessing and ResNet.
 
 ### Copy this prompt
 
@@ -201,9 +233,9 @@ Show me a grid of counts for where it mixed the groups up. Title it something li
 
 Show 12 test photos. On each one, write the guess and the real group. Use green text when it is right and red text when it is wrong.
 
-Remember this test percent. We will compare it with another model later.
+Remember this test percent. We will compare it with random guessing and with ResNet later.
 
-End by saying green titles are correct, red titles are mistakes, and this must not be used to diagnose a real animal.
+End by saying green titles are correct and red titles are mistakes.
 ```
 
 ### You will know it worked when
@@ -213,7 +245,7 @@ End by saying green titles are correct, red titles are mistakes, and this must n
 - You see 12 test photos. Green titles are right. Red titles are mistakes.
 - A sentence gives the plain model's test percent.
 
-## Step 6. Train ResNet
+## Step 7. Train ResNet
 
 ### For you
 
@@ -234,7 +266,7 @@ Give it about 5 passes through the training photos, same idea as the first model
 
 The first time you do this, it may need to download the starter ResNet. That is ok.
 
-Save this model separately from the first one. Tell me in a sentence what percent it got right on the validation photos, and say it is for learning and not a veterinarian.
+Save this model separately from the first one. Tell me in a sentence what percent it got right on the validation photos.
 ```
 
 ### You will know it worked when
@@ -243,11 +275,11 @@ The cell prints a validation percent and says the ResNet model was saved.
 
 The next step scores it on the same test photos the plain model already saw.
 
-## Step 7. See how ResNet did
+## Step 8. See how ResNet did
 
 ### For you
 
-This is the same kind of score as Step 5, on the same test photos, for ResNet. Keep this test percent. The next step puts it next to the plain model.
+This is the same kind of score as the plain model, on the same test photos, for ResNet. Keep this test percent. The next step puts it next to random guessing and the plain model.
 
 ### Copy this prompt
 
@@ -263,8 +295,6 @@ Show the mix-up grid for ResNet, say which mix-up happened most, and say how man
 Show 12 test photos with the guess and the real group. Green if it is right, red if it is wrong. If you can, use the same 12 photos you showed for the simple model, so I can compare.
 
 Remember this test percent too.
-
-End by saying this is a classroom model and must not be used to diagnose a real animal.
 ```
 
 ### You will know it worked when
@@ -274,51 +304,73 @@ End by saying this is a classroom model and must not be used to diagnose a real 
 - You see 12 test photos. Green titles are right. Red titles are mistakes.
 - A sentence gives ResNet's test percent.
 
-## Step 8. Compare the two models
+## Step 9. Compare the three models
 
 ### For you
 
-Both models were scored on the same test photos. This step puts those two percents side by side. A higher bar means that model was right more often. The line at 33 percent is what guessing would score.
+Random guessing, the plain model, and ResNet were all scored on the same test photos. This step puts the three percents side by side. A higher bar means that way of guessing was right more often.
+
+It also shows the same 10 test photos three times, so you can see the random guess, the plain-model guess, and the ResNet guess on each photo.
 
 ### Copy this prompt
 
 ```text
-We now have two cattle models, the simple one and the ResNet one. Both were scored on the same test photos. Please compare them for me. Don't train anything.
+We now have three results on the same test photos: random guessing, the plain model, and ResNet. Please compare all three. Don't train anything, and don't add a line on the chart for guessing. Random guessing gets its own bar.
 
-Make a bar chart called "Test pictures: which model was right more often." One bar for the plain model and one bar for ResNet. Show percent correct from 0 to 100, and write the percent on each bar. Add a dotted line at 33 percent labeled Guessing, since a random guess among three groups would be about that.
+Make a bar chart called "Test pictures: which model was right more often." Three bars: Random guessing, Plain model, and ResNet. Show percent correct from 0 to 100, and write the percent on each bar.
 
-Then tell me, in a few sentences, the plain model's test percent, ResNet's test percent, and which one did better and by about how much. If they are basically tied, say that.
+Then pick 10 test photos at random and use those same 10 for all three. Make one figure with the 10 photos. On every photo, write the real group, the random guess, the plain model's guess, and ResNet's guess. Use green text when a guess matches and red text when it does not.
 
-Say that both scores are classroom results and neither model is a veterinarian.
+Tell me each test percent in a sentence, and which one did better.
 ```
 
 ### You will know it worked when
 
-You see two bars, one for the plain model and one for ResNet, and a sentence that says which test score was higher.
+You see three bars, including one for random guessing, and one figure of the same 10 photos with all three guesses written on them.
 
-## Step 9, optional. Try one photo
+## Step 10, optional. Try one photo
 
 ### For you
 
-Use this if you want both models to guess on one more cattle photo. In Colab, run the cell and choose an image file when it asks.
-
-The sentences you get are classroom results, not a diagnosis.
+Use this if you want a guess on one more cattle photo from random guessing, the plain model, and ResNet. In Colab, run the cell and choose an image file when it asks.
 
 ### Copy this prompt
 
 ```text
-I want to try one new cattle photo on both models we trained. Don't train them again.
+I want to try one new cattle photo. Don't train anything again.
 
 If this is Google Colab, let me pick a photo from my computer. If not, look for a file named my_cow.jpg. If you can't find a photo, tell me how to provide one.
 
-Show me the photo. Then tell me what the plain model thinks it is, and how sure it is. Then tell me what ResNet thinks, and how sure it is. Use the names Foot and mouth, Healthy, and Lumpy skin. Also tell me the percent for each group.
-
-End by saying these are classroom guesses, not a veterinary diagnosis.
+Show me the photo. Then tell me the random guess, what the plain model thinks, and what ResNet thinks. Say how sure each trained model is. Use the names Foot and mouth, Healthy, and Lumpy skin.
 ```
 
 ### You will know it worked when
 
-You see your photo and two guesses, one from the plain model and one from ResNet.
+You see your photo and three guesses: random, the plain model, and ResNet.
+
+## Step 11, optional. Plain model and ResNet on a quarter of the training photos
+
+### For you
+
+This part is optional. It asks a smaller question: if the models only learned from about one quarter of the training photos, and checked themselves on about one quarter of the validation photos, how would the plain model and ResNet compare?
+
+The test photos stay the same pile from Step 3. Both new models are scored on that full test pile. This does not replace the models from the full set.
+
+### Copy this prompt
+
+```text
+This is a separate experiment. Please don't replace the models we already trained on the full set, and don't change the test photos.
+
+Keep every test photo exactly as it is. From the training photos, keep about one quarter, and from the validation photos, keep about one quarter. When you pick that quarter, keep some photos from each disease in both the smaller training pile and the smaller validation pile.
+
+Train a new plain model from scratch, and a new pretrained ResNet, using only those smaller training and validation piles. Give each about 5 passes. Don't look at the test photos while they learn.
+
+Then score both on the full test pile, the same test photos as before. Make a bar chart with two bars, Plain model and ResNet, showing percent correct. Tell me both percentages and which one did better when it had less to learn from.
+```
+
+### You will know it worked when
+
+The test photos are the same ones as before. You see two bars for this smaller-training experiment, and a sentence that says which of those two scores was higher.
 
 ## When a cell turns red
 
